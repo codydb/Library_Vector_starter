@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <time.h>
 #include <iostream>
+#include <fstream>
 
 #include "../includes_usr/library.h"
 #include "../includes_usr/datastructures.h"

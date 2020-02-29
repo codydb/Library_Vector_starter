@@ -5,7 +5,6 @@ const std::string BOOKFILE			= "./tmp/bookfile.txt";
 const std::string BOOKFILE_EMPTY	= "./tmp/bookfileMT.txt";
 const std::string PATRONFILE		= "./tmp/patronfile.txt";
 const std::string PATRONFILE_EMPTY	= "./tmp/patronfileMT.txt";
-
 const std::string NON_EXISTANT = "./tmp/nonexistantfile";
 const std::string TMP_FILE = "./tmp/tmp.txt";
 

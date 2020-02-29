@@ -14,11 +14,18 @@ using namespace std;
 //NOTE: also make sure you save patron and book data to disk any time you make a change to them
 //NOTE: for files where data is stored see constants.h BOOKFILE and PATRONFILE
 
+std::vector<book> books;
+std::vector<patron> patrons;
+
 /*
  * clear books and patrons containers
  * then reload them from disk 
  */
-void reloadAllData(){
+void reloadAllData() {
+	books.clear();
+	patrons.clear();
+	loadBooks(books, BOOKFILE.c_str());
+	loadPatrons(patrons, PATRONFILE.c_str());
 
 }
 
@@ -42,7 +49,32 @@ void reloadAllData(){
  * 		   BOOK_NOT_IN_COLLECTION
  *         TOO_MANY_OUT patron has the max number of books allowed checked out
  */
-int checkout(int bookid, int patronid){
+int checkout(int bookid, int patronid) {
+	reloadAllData();
+
+	int patsize = patrons.size();
+	int boksize = books.size();
+
+
+	if ((unsigned)patsize < patronid) {
+		return PATRON_NOT_ENROLLED;
+	}
+	if ((unsigned)boksize < bookid) {
+		return BOOK_NOT_IN_COLLECTION;
+	}
+
+	if (patrons[patronid].number_books_checked_out == MAX_BOOKS_ALLOWED_OUT) {
+		return TOO_MANY_OUT;
+	} else {
+		patrons[patronid].number_books_checked_out++;
+	}
+
+	books[bookid].loaned_to_patron_id = patronid;
+	books[bookid].state = OUT;
+
+	savePatrons(patrons, PATRONFILE.c_str());
+	saveBooks(books, BOOKFILE.c_str());
+
 	return SUCCESS;
 }
 
@@ -58,7 +90,29 @@ int checkout(int bookid, int patronid){
  * returns SUCCESS checkout worked
  * 		   BOOK_NOT_IN_COLLECTION
  */
-int checkin(int bookid){
+int checkin(int bookid) {
+	reloadAllData();
+
+	int boksize = books.size();
+
+	if ((unsigned)boksize < bookid) {
+		return BOOK_NOT_IN_COLLECTION;
+	}
+
+	std::vector<patron>::iterator patItr;
+
+	for (patItr = patrons.begin(); patItr != patrons.end(); patItr++) {
+		if ((*patItr).patron_id == books[bookid].loaned_to_patron_id) {
+			(*patItr).number_books_checked_out--;
+		}
+	}
+
+	books[bookid].loaned_to_patron_id = NO_ONE;
+	books[bookid].state = IN;
+
+	savePatrons(patrons, PATRONFILE.c_str());
+	saveBooks(books, BOOKFILE.c_str());
+
 	return SUCCESS;
 }
 
@@ -71,8 +125,25 @@ int checkin(int bookid){
  * return 
  *    the patron_id of the person added
  */
-int enroll(std::string &name){
-	return 0;
+int enroll(std::string &name) {
+	reloadAllData();
+	int newID;
+
+	if (patrons.empty()) {
+		newID = PATRON_0;
+	} else {
+		int size = patrons.size();
+		newID = size +1;}
+
+	patron newPat;
+	newPat.patron_id = newID;
+	newPat.name = name;
+	newPat.number_books_checked_out = NONE;
+	patrons.push_back(newPat);
+
+	savePatrons(patrons, PATRONFILE.c_str());
+
+	return newID;
 }
 
 /*
@@ -80,16 +151,18 @@ int enroll(std::string &name){
  * (ie. if 3 books returns 3)
  * 
  */
-int numbBooks(){
-	return 0;
+int numbBooks() {
+	reloadAllData();
+	return books.size();
 }
 
 /*
  * the number of patrons in the patrons container
  * (ie. if 3 patrons returns 3)
  */
-int numbPatrons(){
-	return 0;
+int numbPatrons() {
+	reloadAllData();
+	return patrons.size();
 }
 
 /*the number of books patron has checked out
@@ -97,8 +170,17 @@ int numbPatrons(){
  *returns a positive number indicating how many books are checked out 
  *        or PATRON_NOT_ENROLLED         
  */
-int howmanybooksdoesPatronHaveCheckedOut(int patronid){
-	return 0;
+int howmanybooksdoesPatronHaveCheckedOut(int patronid) {
+	std::vector<patron>::iterator patItr;
+	int ret = PATRON_NOT_ENROLLED;
+
+	for (patItr = patrons.begin(); patItr != patrons.end(); patItr++) {
+		if ((*patItr).patron_id == patronid) {
+			ret = (*patItr).number_books_checked_out;
+		}
+	}
+
+	return ret;
 }
 
 /* search through patrons container to see if patronid is there
@@ -107,7 +189,17 @@ int howmanybooksdoesPatronHaveCheckedOut(int patronid){
  * returns SUCCESS found it and name in name
  *         PATRON_NOT_ENROLLED no patron with this patronid
  */
-int whatIsPatronName(std::string &name,int patronid){
-	return SUCCESS;
+int whatIsPatronName(std::string &name, int patronid) {
+	std::vector<patron>::iterator patItr;
+	int ret = PATRON_NOT_ENROLLED;
+
+	for (patItr = patrons.begin(); patItr != patrons.end(); patItr++) {
+		if ((*patItr).patron_id == patronid) {
+			ret = SUCCESS;
+			name = (*patItr).name;
+		}
+	}
+
+	return ret;
 }
 

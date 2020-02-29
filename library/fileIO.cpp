@@ -5,7 +5,7 @@
 
 using namespace std;
 
-const char comma = ",";
+const char comma = ',';
 
 /*Parse strings to ints
  */
@@ -23,14 +23,15 @@ int strToInt(const string &str) {
  * */
 int loadBooks(std::vector<book> &books, const char *filename) {
 	books.clear();
-	fstream myfstream;
-	myfstream.open(filename, ios::out);
+	ifstream myfstream;
+
+	myfstream.open(filename, ios::in);
 
 	if (!myfstream.is_open()) {
 		return COULD_NOT_OPEN_FILE;
 	}
 
-	if (myfstream.eof()) {
+	if (myfstream.peek() == std::ifstream::traits_type::eof()) {
 		return NO_BOOKS_IN_LIBRARY;
 	}
 
@@ -49,7 +50,15 @@ int loadBooks(std::vector<book> &books, const char *filename) {
 		getline(ss, tempToken, comma);
 		tempBook.author = tempToken;
 		getline(ss, tempToken, comma);
-		tempBook.state = strToInt(tempToken);
+		int state = strToInt(tempToken);
+		if (state == 1) {
+			tempBook.state = IN;
+		}
+		else if (state == 2) {
+			tempBook.state = OUT;
+		} else {
+			tempBook.state = UNKNOWN;
+		}
 		getline(ss, tempToken, comma);
 		tempBook.loaned_to_patron_id = strToInt(tempToken);
 
@@ -70,9 +79,9 @@ int saveBooks(std::vector<book> &books, const char *filename) {
 		return NO_BOOKS_IN_LIBRARY;
 	}
 
-	fstream myfstream;
+	ofstream myfstream;
 
-	myfstream.open(filename, ios::in);
+	myfstream.open(filename, ios::out);
 
 	if (!myfstream.is_open()) {
 		return COULD_NOT_OPEN_FILE;
@@ -82,10 +91,7 @@ int saveBooks(std::vector<book> &books, const char *filename) {
 
 	for (bookItr = books.begin(); bookItr != books.end(); bookItr++) {
 
-		myfstream
-				<< (*bookItr).book_id + comma + (*bookItr).author + comma
-						+ (*bookItr).author + comma + (*bookItr).state + comma
-						+ (*bookItr).loaned_to_patron_id + "\n";
+		myfstream << (*bookItr).book_id << comma << (*bookItr).title << comma << (*bookItr).author << comma << (*bookItr).state << comma << (*bookItr).loaned_to_patron_id << std::endl;
 	}
 
 	myfstream.close();
@@ -100,14 +106,14 @@ int saveBooks(std::vector<book> &books, const char *filename) {
  * */
 int loadPatrons(std::vector<patron> &patrons, const char *filename) {
 	patrons.clear();
-	fstream myfstream;
-	myfstream.open(filename, ios::out);
+	ifstream myfstream;
+	myfstream.open(filename, ios::in);
 
 	if (!myfstream.is_open()) {
 		return COULD_NOT_OPEN_FILE;
 	}
 
-	if (myfstream.eof()) {
+	if (myfstream.peek() == std::ofstream::traits_type::eof()) {
 		return NO_PATRONS_IN_LIBRARY;
 	}
 
@@ -144,9 +150,9 @@ int savePatrons(std::vector<patron> &patrons, const char *filename) {
 		return NO_PATRONS_IN_LIBRARY;
 	}
 
-	fstream myfstream;
+	ofstream myfstream;
 
-	myfstream.open(filename, ios::in);
+	myfstream.open(filename, ios::out);
 
 	if (!myfstream.is_open()) {
 		return COULD_NOT_OPEN_FILE;
@@ -156,9 +162,7 @@ int savePatrons(std::vector<patron> &patrons, const char *filename) {
 
 	for (patItr = patrons.begin(); patItr != patrons.end(); patItr++) {
 
-		myfstream
-				<< (*patItr).patron_id + comma + (*patItr).name + comma
-						+ (*patItr).number_books_checked_out + "\n";
+		myfstream << (*patItr).patron_id << comma << (*patItr).name << comma << (*patItr).number_books_checked_out << std::endl;
 	}
 
 	myfstream.close();

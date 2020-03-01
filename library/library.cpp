@@ -10,6 +10,8 @@
 #include "../includes_usr/fileIO.h"
 using namespace std;
 
+// Cody Baker 2020
+
 //NOTE: please ensure patron and book data are loaded from disk before calling the following
 //NOTE: also make sure you save patron and book data to disk any time you make a change to them
 //NOTE: for files where data is stored see constants.h BOOKFILE and PATRONFILE
@@ -55,11 +57,10 @@ int checkout(int bookid, int patronid) {
 	int patsize = patrons.size();
 	int boksize = books.size();
 
-
-	if ((unsigned)patsize < patronid) {
+	if (patsize < patronid) {
 		return PATRON_NOT_ENROLLED;
 	}
-	if ((unsigned)boksize < bookid) {
+	if (boksize < bookid) {
 		return BOOK_NOT_IN_COLLECTION;
 	}
 
@@ -95,7 +96,7 @@ int checkin(int bookid) {
 
 	int boksize = books.size();
 
-	if ((unsigned)boksize < bookid) {
+	if (boksize < bookid) {
 		return BOOK_NOT_IN_COLLECTION;
 	}
 
@@ -127,13 +128,7 @@ int checkin(int bookid) {
  */
 int enroll(std::string &name) {
 	reloadAllData();
-	int newID;
-
-	if (patrons.empty()) {
-		newID = PATRON_0;
-	} else {
-		int size = patrons.size();
-		newID = size +1;}
+	int newID = patrons.size();
 
 	patron newPat;
 	newPat.patron_id = newID;

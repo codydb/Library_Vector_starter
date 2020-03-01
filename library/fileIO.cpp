@@ -5,6 +5,8 @@
 
 using namespace std;
 
+//Cody Baker 2020
+
 const char comma = ',';
 
 /*Parse strings to ints
@@ -24,7 +26,6 @@ int strToInt(const string &str) {
 int loadBooks(std::vector<book> &books, const char *filename) {
 	books.clear();
 	ifstream myfstream;
-
 	myfstream.open(filename, ios::in);
 
 	if (!myfstream.is_open()) {
@@ -80,7 +81,6 @@ int saveBooks(std::vector<book> &books, const char *filename) {
 	}
 
 	ofstream myfstream;
-
 	myfstream.open(filename, ios::out);
 
 	if (!myfstream.is_open()) {
@@ -91,7 +91,8 @@ int saveBooks(std::vector<book> &books, const char *filename) {
 
 	for (bookItr = books.begin(); bookItr != books.end(); bookItr++) {
 
-		myfstream << (*bookItr).book_id << comma << (*bookItr).title << comma << (*bookItr).author << comma << (*bookItr).state << comma << (*bookItr).loaned_to_patron_id << std::endl;
+		myfstream << (*bookItr).book_id << comma << (*bookItr).title << comma << (*bookItr).author << comma
+				<< (*bookItr).state << comma << (*bookItr).loaned_to_patron_id << std::endl;
 	}
 
 	myfstream.close();
@@ -151,7 +152,6 @@ int savePatrons(std::vector<patron> &patrons, const char *filename) {
 	}
 
 	ofstream myfstream;
-
 	myfstream.open(filename, ios::out);
 
 	if (!myfstream.is_open()) {
@@ -162,7 +162,8 @@ int savePatrons(std::vector<patron> &patrons, const char *filename) {
 
 	for (patItr = patrons.begin(); patItr != patrons.end(); patItr++) {
 
-		myfstream << (*patItr).patron_id << comma << (*patItr).name << comma << (*patItr).number_books_checked_out << std::endl;
+		myfstream << (*patItr).patron_id << comma << (*patItr).name << comma
+				<< (*patItr).number_books_checked_out << std::endl;
 	}
 
 	myfstream.close();
